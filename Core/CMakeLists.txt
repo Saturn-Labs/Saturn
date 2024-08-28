@@ -5,8 +5,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 include_directories(
-        "${INCLUDE_DIR}"
-        "${SOURCE_DIR}"
+        ${INCLUDE_DIR}
+        ${SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/glfw/include
 )
 
 file(GLOB_RECURSE API_INCLUDE_LIST
@@ -28,6 +29,8 @@ add_library(SaturnFrameworkCore STATIC
     ${INCLUDE_LIST}
     ${SOURCE_LIST}
 )
+
+target_link_libraries(SaturnFrameworkCore glfw)
 
 file(GLOB_RECURSE INSTALL_FILE_LIST
         "*.lib"

@@ -1,7 +1,8 @@
 ﻿#include <iostream>
-#include <ostream>
+#include "Core/Framework.hpp"
 
+using namespace Saturn;
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    Framework::CreateInstance();
     return 0;
 }
