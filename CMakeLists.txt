@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.29)
+project(SaturnFramework)
+set(CMAKE_CXX_STANDARD 20)
+set(SOURCE_DIR "source")
+set(INCLUDE_DIR "include")
+add_subdirectory(Core)
+add_subdirectory(Application)
