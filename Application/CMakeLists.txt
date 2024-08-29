@@ -15,17 +15,12 @@ file(GLOB_RECURSE APP_SOURCE_LIST
         "${SOURCE_DIR}/*.cpp"
 )
 
-include(CMakePrintHelpers)
-message(${APP_SOURCE_LIST})
-
 add_executable(SaturnFrameworkApp
         ${APP_INCLUDE_LIST}
         ${APP_SOURCE_LIST}
 )
-add_dependencies(SaturnFrameworkApp SaturnFrameworkCore)
-target_link_libraries(SaturnFrameworkApp glfw)
 
-target_link_libraries(SaturnFrameworkApp ${CMAKE_SOURCE_DIR}/Output/Core/${CMAKE_BUILD_TYPE}/SaturnFrameworkCore.lib)
+target_link_libraries(SaturnFrameworkApp SaturnFrameworkCore)
 set_target_properties(
         SaturnFrameworkApp
         PROPERTIES

@@ -12,4 +12,6 @@ _deps
 CMakeUserPresets.json
 .idea/
 .cmakebuild/
+.cmakebuild-debug/
+.cmakebuild-release/
 Output/

@@ -1,8 +1,9 @@
 ﻿#include <iostream>
-#include "Core/Framework.hpp"
+#include "Core/Window.hpp"
 
 using namespace Saturn;
 int main() {
-    Framework::CreateInstance();
+    auto* window = Window::CreateWindow();
+    window->Run();
     return 0;
 }

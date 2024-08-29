@@ -31,16 +31,3 @@ add_library(SaturnFrameworkCore STATIC
 )
 
 target_link_libraries(SaturnFrameworkCore glfw)
-
-file(GLOB_RECURSE INSTALL_FILE_LIST
-        "*.lib"
-        "*.pdb"
-)
-
-set_target_properties(
-        SaturnFrameworkCore
-        PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Output/Core/${CMAKE_BUILD_TYPE}
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Output/Core/${CMAKE_BUILD_TYPE}
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Output/Core/${CMAKE_BUILD_TYPE}
-)

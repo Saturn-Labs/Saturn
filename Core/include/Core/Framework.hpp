@@ -1,14 +1,19 @@
 ﻿#pragma once
-#include "Types.hpp"
+#include "Common/Types.hpp"
 
 namespace Saturn {
     class Framework {
+    private:
+        static bool s_Initialized;
+
     public:
-        Framework() = default;
+        Framework() = delete;
         Framework(const Framework&) = delete;
         Framework& operator=(const Framework&) = delete;
         Framework(Framework&&) = delete;
         Framework& operator=(Framework&&) = delete;
-        static Unique<Framework> CreateInstance();
+
+        static void Initialize();
+        static void Shutdown();
     };
 }

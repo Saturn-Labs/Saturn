@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <memory>
+#include <string>
 
 namespace Saturn {
     typedef float Single;
@@ -12,6 +13,9 @@ namespace Saturn {
     typedef unsigned short UInt16;
     typedef unsigned int UInt32;
     typedef unsigned long long UInt64;
+    typedef std::string String;
+    typedef std::wstring WString;
+    typedef const char* CString;
 
     template<typename T>
     using Shared = std::shared_ptr<T>;
