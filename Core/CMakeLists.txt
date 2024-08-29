@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include_directories(
         ${INCLUDE_DIR}
         ${SOURCE_DIR}
-        ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/glfw/include
 )
 
 file(GLOB_RECURSE API_INCLUDE_LIST

@@ -1,5 +1,7 @@
 ﻿#pragma once
+#include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace Saturn {
@@ -16,6 +18,23 @@ namespace Saturn {
     typedef std::string String;
     typedef std::wstring WString;
     typedef const char* CString;
+
+    template<typename T>
+    using Atomic = std::atomic<T>;
+
+    template<typename T>
+    using Function = std::function<T>;
+
+    template<typename T>
+    using Nullable = std::optional<T>;
+    template<typename T>
+    constexpr Nullable<T> CreateNullable(T value) {
+        return std::optional<T>(value);
+    }
+    inline std::nullopt_t null = std::nullopt;
+
+    template<typename T>
+    using Vector = std::vector<T>;
 
     template<typename T>
     using Shared = std::shared_ptr<T>;

@@ -2,3 +2,9 @@
 	path = Vendor/glfw
 	url = https://github.com/glfw/glfw
 	branch = latest
+[submodule "Vendor/spdlog"]
+	path = Vendor/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "Vendor/uuid_v4"]
+	path = Vendor/uuid_v4
+	url = https://github.com/crashoz/uuid_v4

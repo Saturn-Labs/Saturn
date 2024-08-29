@@ -2,11 +2,11 @@
 
 #include <stdexcept>
 
+#include "Core/Framework.hpp"
+#include "Core/Timestep.hpp"
 #include "GLFW/glfw3.h"
 
 namespace Saturn {
-    Window* Window::s_Window = nullptr;
-
     Window::Window(const WindowProperties& props) :
         m_UserPointer(new WindowUserPointer { props })
     {
@@ -21,6 +21,8 @@ namespace Saturn {
         glfwMakeContextCurrent(window);
         glfwSetWindowUserPointer(window, m_UserPointer);
         glfwSwapInterval(props.VSync ? 1 : 0);
+        if (Framework::HasLogger())
+            Framework::GetLogger().Trace("Created GLFW window: {}", props.WindowName);
     }
 
     Window::~Window() {
@@ -31,7 +33,15 @@ namespace Saturn {
     void Window::Run() {
         while (!glfwWindowShouldClose(m_NativeWindow)) {
             glfwPollEvents();
-            // Render here...
+            const double time = glfwGetTime();
+            Timestep timestep = { time - m_LastFrameTime };
+            m_LastFrameTime = time;
+
+            if (Framework::HasLayerStack()) {
+                LayerStack& layers = Framework::GetLayerStack();
+                layers.Update(timestep);
+            }
+
             glfwSwapBuffers(m_NativeWindow);
         }
     }
@@ -46,12 +56,16 @@ namespace Saturn {
     }
 
     Window* Window::Create(const WindowProperties& props) {
-        if (s_Window)
-            return s_Window;
+        if (Framework::HasWindow())
+            return &Framework::GetWindow();
 
         if (!glfwInit())
             return nullptr;
 
         return new Window(props);
+    }
+
+    Window* Window::GetInstance()  {
+        return &Framework::GetWindow();
     }
 }

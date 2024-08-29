@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Common/Types.hpp"
-#include "GLFW/glfw3.h"
 
+class GLFWwindow;
 namespace Saturn {
     struct WindowProperties {
         String WindowName = "Default Window";
@@ -16,10 +16,9 @@ namespace Saturn {
 
     class Window {
     private:
-        static Window* s_Window;
-
         WindowUserPointer* m_UserPointer;
         GLFWwindow* m_NativeWindow;
+        double m_LastFrameTime;
 
     private:
         explicit Window(const WindowProperties& props);
@@ -38,8 +37,6 @@ namespace Saturn {
 
     public:
         static Window* Create(const WindowProperties& props = WindowProperties());
-        static Window* GetInstance() {
-            return s_Window;
-        }
+        static Window* GetInstance();
     };
 }
