@@ -45,7 +45,7 @@ namespace Saturn {
         glfwSetWindowUserPointer(m_NativeWindow, pointer);
     }
 
-    Window* Window::CreateWindow(const WindowProperties& props) {
+    Window* Window::Create(const WindowProperties& props) {
         if (s_Window)
             return s_Window;
 

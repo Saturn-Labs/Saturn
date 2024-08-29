@@ -37,7 +37,7 @@ namespace Saturn {
         void SetUserPointer(WindowUserPointer* pointer);
 
     public:
-        static Window* CreateWindow(const WindowProperties& props = WindowProperties());
+        static Window* Create(const WindowProperties& props = WindowProperties());
         static Window* GetInstance() {
             return s_Window;
         }
