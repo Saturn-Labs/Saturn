@@ -3,6 +3,9 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <istream>
+#include <fstream>
+#include <ostream>
 
 namespace Saturn {
     typedef float Single;
@@ -59,5 +62,9 @@ namespace Saturn {
     {
         return std::make_unique<T>(std::forward<Args>(args)...);
     }
+
+    using FileStream = std::fstream;
+    using ReadFileStream = std::ifstream;
+    using WriteFileStream = std::ofstream;
 }
 

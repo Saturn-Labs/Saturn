@@ -3,6 +3,8 @@
 
 class GLFWwindow;
 namespace Saturn {
+    class Logger;
+
     struct WindowProperties {
         String WindowName = "Default Window";
         int Width = 640;
@@ -18,10 +20,11 @@ namespace Saturn {
     private:
         WindowUserPointer* m_UserPointer;
         GLFWwindow* m_NativeWindow;
-        double m_LastFrameTime;
+        double m_LastFrameTime = 0;
+        Logger& logger;
 
     private:
-        explicit Window(const WindowProperties& props);
+        explicit Window(Logger& logger, const WindowProperties& props);
 
     public:
         Window(const Window&) = delete;
@@ -36,7 +39,6 @@ namespace Saturn {
         void SetUserPointer(WindowUserPointer* pointer);
 
     public:
-        static Window* Create(const WindowProperties& props = WindowProperties());
-        static Window* GetInstance();
+        static Window* Create(Logger& logger, const WindowProperties& props = WindowProperties());
     };
 }

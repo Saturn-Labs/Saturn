@@ -3,30 +3,28 @@
 #include "Core/Framework.hpp"
 #include "Core/Timestep.hpp"
 #include "Core/Window.hpp"
+#include "glm/glm.hpp"
+#include "IO/File.hpp"
 
 using namespace Saturn;
 
 class MyLayer final : public Layer {
 public:
-    Logger& logger;
-
-    MyLayer(LayerStack &stack, const String &name) :
-        Layer(stack, name),
-        logger(Framework::GetLogger())
+    MyLayer(LayerStack &stack, Logger& logger, Renderer& renderer, const String &name) :
+        Layer(stack, logger, renderer, name)
     {
-        logger.Info("MyLayer created!");
     }
 
     void Awake() override {
-        logger.Trace("MyLayer awake!");
+
     }
 
     void Update(const Timestep &timestep) override {
-        logger.Trace("MyLayer update: {}s", timestep.Delta);
+
     }
 
     ~MyLayer() override {
-        logger.Info("MyLayer destroyed!");
+
     }
 };
 

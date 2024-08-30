@@ -4,10 +4,12 @@
 #include "Utils/UUIDGenerator.hpp"
 
 namespace Saturn {
-    Layer::Layer(LayerStack& stack, const String &name) :
+    Layer::Layer(LayerStack& stack, Logger& logger, Renderer& renderer, const String &name) :
         m_LayerStack(stack),
         m_Identifier(UUIDGenerator::GenerateUUID()),
-        m_Name(name)
+        m_Name(name),
+        logger(logger),
+        renderer(renderer)
     {
     }
 

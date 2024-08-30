@@ -3,6 +3,7 @@
 #include "Window.hpp"
 #include "Common/Types.hpp"
 #include "IO/Logger.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace Saturn {
     class Framework {
@@ -10,6 +11,7 @@ namespace Saturn {
         static std::atomic<bool> s_Initialized;
         static Window* s_Window;
         static Logger* s_Logger;
+        static Renderer* s_Renderer;
         static LayerStack* s_LayerStack;
 
     public:
@@ -38,6 +40,13 @@ namespace Saturn {
         }
         static Logger& GetLogger() {
             return *s_Logger;
+        }
+
+        static bool HasRenderer() {
+            return IsInitialized() && s_Renderer;
+        }
+        static Renderer& GetRenderer() {
+            return *s_Renderer;
         }
 
         static bool HasLayerStack() {

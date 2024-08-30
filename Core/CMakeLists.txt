@@ -12,6 +12,7 @@ include_directories(
 file(GLOB_RECURSE API_INCLUDE_LIST
         "${INCLUDE_DIR}/*.h"
         "${INCLUDE_DIR}/*.hpp"
+        "${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/glad/src/gl.c"
 )
 
 file(GLOB_RECURSE INCLUDE_LIST

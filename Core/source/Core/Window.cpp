@@ -7,10 +7,11 @@
 #include "GLFW/glfw3.h"
 
 namespace Saturn {
-    Window::Window(const WindowProperties& props) :
-        m_UserPointer(new WindowUserPointer { props })
+    Window::Window(Logger& logger, const WindowProperties& props) :
+        m_UserPointer(new WindowUserPointer { props }),
+        logger(logger)
     {
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         auto* window = glfwCreateWindow(props.Width, props.Height, props.WindowName.c_str(), nullptr, nullptr);
@@ -37,6 +38,11 @@ namespace Saturn {
             Timestep timestep = { time - m_LastFrameTime };
             m_LastFrameTime = time;
 
+            if (Framework::HasRenderer()) {
+                Renderer& renderer = Framework::GetRenderer();
+                renderer.Clear();
+            }
+
             if (Framework::HasLayerStack()) {
                 LayerStack& layers = Framework::GetLayerStack();
                 layers.Update(timestep);
@@ -55,17 +61,13 @@ namespace Saturn {
         glfwSetWindowUserPointer(m_NativeWindow, pointer);
     }
 
-    Window* Window::Create(const WindowProperties& props) {
+    Window* Window::Create(Logger& logger, const WindowProperties& props) {
         if (Framework::HasWindow())
             return &Framework::GetWindow();
 
         if (!glfwInit())
             return nullptr;
 
-        return new Window(props);
-    }
-
-    Window* Window::GetInstance()  {
-        return &Framework::GetWindow();
+        return new Window(logger, props);
     }
 }

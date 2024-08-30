@@ -3,11 +3,17 @@
 #include "Core/Framework.hpp"
 
 namespace Saturn {
-    LayerStack* LayerStack::Create() {
+    LayerStack::LayerStack(Logger &logger, Renderer& renderer) :
+        logger(logger),
+        m_Renderer(renderer)
+    {
+    }
+
+    LayerStack* LayerStack::Create(Logger& logger, Renderer& renderer) {
         if (Framework::HasLayerStack())
             return &Framework::GetLayerStack();
 
-        return new LayerStack();
+        return new LayerStack(logger, renderer);
     }
 
     void LayerStack::Update(const Timestep& timestep) const {

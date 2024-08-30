@@ -4,6 +4,8 @@
 
 using namespace UUIDv4;
 namespace Saturn {
+    class Renderer;
+    class Logger;
     struct Timestep;
     class LayerStack;
     class Layer {
@@ -13,8 +15,11 @@ namespace Saturn {
         UUID m_Identifier;
         String m_Name;
         bool m_IsAwaken = false;
+        Logger& logger;
+        Renderer& renderer;
+
     public:
-        explicit Layer(LayerStack& stack, const String& name);
+        explicit Layer(LayerStack& stack, Logger& logger, Renderer& renderer, const String& name);
         Layer(const Layer&) = delete;
         Layer(Layer&&) = delete;
         Layer& operator=(const Layer&) = delete;

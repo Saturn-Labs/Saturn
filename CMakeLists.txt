@@ -11,6 +11,8 @@ include_directories(
         ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/glfw/include
         ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/spdlog/include
         ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/uuid_v4
+        ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/glad/include
+        ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/glm
 )
 
 add_subdirectory(Vendor/glfw)

@@ -5,11 +5,16 @@
 #include "Common/Types.hpp"
 
 namespace Saturn {
+    class Renderer;
+    class Logger;
+
     class LayerStack {
         Vector<Unique<Layer>> m_Layers = {};
+        Logger& logger;
+        Renderer& m_Renderer;
 
     private:
-        LayerStack() = default;
+        explicit LayerStack(Logger& logger, Renderer& renderer);
 
     public:
         LayerStack(const LayerStack&) = delete;
@@ -17,12 +22,12 @@ namespace Saturn {
         LayerStack& operator=(const LayerStack&) = delete;
         LayerStack& operator=(LayerStack&&) = delete;
 
-        static LayerStack* Create();
+        static LayerStack* Create(Logger& logger, Renderer& renderer);
 
     public:
         template<typename TLayer = Layer, typename... Args>
         TLayer& Emplace(Args&&... args) {
-            return static_cast<TLayer&>(*m_Layers.emplace_back(CreateUnique<TLayer>(*this, std::forward<Args>(args)...)));
+            return static_cast<TLayer&>(*m_Layers.emplace_back(CreateUnique<TLayer>(*this, logger, m_Renderer, std::forward<Args>(args)...)));
         }
 
         template<typename TLayer = Layer>
