@@ -13,6 +13,7 @@ include_directories(
         ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/uuid_v4
         ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/glad/include
         ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/glm
+        ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/imgui
 )
 
 add_subdirectory(Vendor/glfw)

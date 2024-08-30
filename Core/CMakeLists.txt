@@ -12,7 +12,12 @@ include_directories(
 file(GLOB_RECURSE API_INCLUDE_LIST
         "${INCLUDE_DIR}/*.h"
         "${INCLUDE_DIR}/*.hpp"
-        "${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/glad/src/gl.c"
+        "${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/glad/src/glad.c"
+)
+
+file(GLOB IMGUI_INCLUDE
+        "${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/imgui/*.cpp"
+        "${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/imgui/*.h"
 )
 
 file(GLOB_RECURSE INCLUDE_LIST
@@ -25,9 +30,10 @@ file(GLOB_RECURSE SOURCE_LIST
 )
 
 add_library(SaturnFrameworkCore STATIC
-    ${API_INCLUDE_LIST}
-    ${INCLUDE_LIST}
-    ${SOURCE_LIST}
+        ${IMGUI_INCLUDE}
+        ${API_INCLUDE_LIST}
+        ${INCLUDE_LIST}
+        ${SOURCE_LIST}
 )
 
 target_link_libraries(SaturnFrameworkCore glfw)

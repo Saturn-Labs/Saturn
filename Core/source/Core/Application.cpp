@@ -1,5 +1,8 @@
 ﻿#include "Core/Application.hpp"
 
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
 #include "Core/GLFWManager.hpp"
 #include "Core/Window.hpp"
 #include "IO/Logger.hpp"
@@ -50,7 +53,11 @@ namespace Saturn {
 
     void Application::RunApplication() {
         while (!m_Windows.empty()) {
+            GLFWManager::PollEvents();
             const Timestep timestep = GLFWManager::Update();
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
             for (auto it = m_Windows.begin(); it != m_Windows.end();) {
                 const auto& window = *it;
                 if (window->ShouldClose()) {
@@ -62,8 +69,8 @@ namespace Saturn {
                 window->Update(timestep);
                 ++it;
             }
-
-            GLFWManager::PollEvents();
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         }
     }
 }

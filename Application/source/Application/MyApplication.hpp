@@ -1,11 +1,12 @@
 ﻿#pragma once
+#include "imgui.h"
 #include "Core/Application.hpp"
 #include "Core/Timestep.hpp"
 #include "Core/Window.hpp"
 #include "Core/LayerSystem/Layer.hpp"
 #include "Core/LayerSystem/LayerStack.hpp"
 #include "IO/Logger.hpp"
-#include "glad/gl.h"
+#include "glad/glad.h"
 
 class MyLayer final : public Saturn::Layer {
     Saturn::Logger& logger;
@@ -22,6 +23,7 @@ public:
     }
 
     void OnUpdate(Saturn::Timestep timestep) override {
+        ImGui::ShowDemoWindow();
         glClearColor(0, 0.2, 0.2, 1);
         glClear(GL_COLOR_BUFFER_BIT);
     }
@@ -32,7 +34,6 @@ public:
 };
 
 class MyApplication final : public Saturn::Application {
-    Saturn::Window& m_MainWindow;
 public:
     MyApplication();
     ~MyApplication() override;

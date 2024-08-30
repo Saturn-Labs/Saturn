@@ -1,9 +1,12 @@
-﻿#include <glad/gl.h>
+﻿#include <glad/glad.h>
 #include <stdexcept>
 #include "Core/Window.hpp"
 #include "Core/Application.hpp"
 #include "Core/Timestep.hpp"
 #include "IO/Logger.hpp"
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
 
 namespace Saturn {
     Window::Window(Application& application, const WindowProperties& props) :
@@ -12,8 +15,9 @@ namespace Saturn {
         m_LayerStack(LayerStack(*this))
     {
         GLFWManager::SetWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        GLFWManager::SetWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        GLFWManager::SetWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
         GLFWManager::SetWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
         auto* window = GLFWManager::CreateNewWindow(props.Width, props.Height, props.WindowName.c_str(), nullptr, nullptr);
         m_NativeWindow = window;
         if (!window)
@@ -24,16 +28,22 @@ namespace Saturn {
 
         Window* oldContextWindow = application.SetCurrentWindow(this);
         GLFWManager::SetSwapInterval(m_UserPointer->Properties.VSync ? 1 : 0);
-        int version;
-        if ((version = gladLoadGL(glfwGetProcAddress)) == 0)
+        if (int version; (version = gladLoadGL()) == 0)
             throw std::exception("Failed to load OpenGL for Window.");
-        application.GetLogger().Trace("Loaded OpenGL {}.{} for '{}'", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version), props.WindowName);
+        application.GetLogger().Trace("Loaded OpenGL {} for '{}'", reinterpret_cast<CString>(glGetString(GL_VERSION)), props.WindowName);
         application.SetCurrentWindow(oldContextWindow);
     }
 
     Window::~Window() {
+        Window* oldContextWindow = GetApplication().SetCurrentWindow(this);
+
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
+
         GLFWManager::DestroyWindow(m_NativeWindow);
-        m_Application.GetLogger().Trace("Destroyed window '{}'", m_UserPointer->Properties.WindowName);
+        GetApplication().SetCurrentWindow(oldContextWindow);
+        GetApplication().GetLogger().Trace("Destroyed window '{}'", m_UserPointer->Properties.WindowName);
         delete m_UserPointer;
     }
 
