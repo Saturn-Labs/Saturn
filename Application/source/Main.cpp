@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 
+#include "Application/MyApplication.hpp"
 #include "Core/Application.hpp"
 #include "Core/Timestep.hpp"
 #include "Core/Window.hpp"
@@ -7,12 +8,8 @@
 #include "IO/File.hpp"
 #include "IO/Logger.hpp"
 #include "Core/EntryPoint.hpp"
-using namespace Saturn;
 
-namespace Saturn {
-    Application* CreateApplication() {
-        auto* app = new Application();
-        app->AddWindow({});
-        return app;
-    }
+Saturn::Application* Saturn::CreateApplication() {
+    auto* app = new MyApplication();
+    return app;
 }

@@ -1,9 +1,11 @@
 ﻿#pragma once
 #include <thread>
 #include "Common/Types.hpp"
+#include "LayerSystem/LayerStack.hpp"
+#include "Core/GLFWManager.hpp"
 
-class GLFWwindow;
 namespace Saturn {
+    struct Timestep;
     class Application;
 
     struct WindowProperties {
@@ -21,7 +23,7 @@ namespace Saturn {
         Application& m_Application;
         WindowUserPointer* m_UserPointer;
         GLFWwindow* m_NativeWindow;
-        double m_LastFrameTime = 0;
+        LayerStack m_LayerStack;
 
     public:
         explicit Window(Application& application, const WindowProperties& props);
@@ -31,10 +33,13 @@ namespace Saturn {
         Window& operator=(Window&&) = delete;
         ~Window();
 
-        void Update();
+        void Update(Timestep timestep);
         void SetUserPointer(WindowUserPointer* pointer);
         WindowUserPointer* GetUserPointer() const;
+        GLFWwindow* GetNativeWindow() const;
         Application& GetApplication() const;
+        const LayerStack& GetLayerStack() const;
+        LayerStack& GetLayerStack();
         bool ShouldClose() const;
 
         static Shared<Window> Create(Application& application, const WindowProperties& props = {});

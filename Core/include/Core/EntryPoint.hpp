@@ -5,8 +5,14 @@ namespace Saturn {
     extern Application* CreateApplication();
 }
 
-int main() {
-    auto* app = Saturn::CreateApplication();
-    app->RunApplication();
+inline int main() {
+    try {
+        auto* app = Saturn::CreateApplication();
+        app->RunApplication();
+    }
+    catch (const std::exception& e) {
+        std::cerr << fmt::format("SaturnFramework threw an exception: {}", e.what()) << std::endl;
+        return 1;
+    }
     return 0;
 }
