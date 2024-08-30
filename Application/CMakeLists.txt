@@ -28,3 +28,12 @@ set_target_properties(
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Output/Application/${CMAKE_BUILD_TYPE}
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Output/Application/${CMAKE_BUILD_TYPE}
 )
+
+add_custom_command(
+        TARGET SaturnFrameworkApp
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/assets
+        ${CMAKE_SOURCE_DIR}/Output/Application/${CMAKE_BUILD_TYPE}/assets
+        COMMENT "Assets copied to output folder."
+)

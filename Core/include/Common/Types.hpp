@@ -6,6 +6,7 @@
 #include <istream>
 #include <fstream>
 #include <ostream>
+#include <thread>
 
 namespace Saturn {
     typedef float Single;
@@ -66,5 +67,6 @@ namespace Saturn {
     using FileStream = std::fstream;
     using ReadFileStream = std::ifstream;
     using WriteFileStream = std::ofstream;
+    using Thread = std::thread;
 }
 

@@ -1,9 +1,10 @@
 ﻿#pragma once
+#include <thread>
 #include "Common/Types.hpp"
 
 class GLFWwindow;
 namespace Saturn {
-    class Logger;
+    class Application;
 
     struct WindowProperties {
         String WindowName = "Default Window";
@@ -17,28 +18,25 @@ namespace Saturn {
     };
 
     class Window {
-    private:
+        Application& m_Application;
         WindowUserPointer* m_UserPointer;
         GLFWwindow* m_NativeWindow;
         double m_LastFrameTime = 0;
-        Logger& logger;
-
-    private:
-        explicit Window(Logger& logger, const WindowProperties& props);
 
     public:
+        explicit Window(Application& application, const WindowProperties& props);
         Window(const Window&) = delete;
         Window(Window&&) = delete;
         Window& operator=(const Window&) = delete;
         Window& operator=(Window&&) = delete;
         ~Window();
 
-    public:
-        void Run();
-        WindowUserPointer* GetUserPointer() const;
+        void Update();
         void SetUserPointer(WindowUserPointer* pointer);
+        WindowUserPointer* GetUserPointer() const;
+        Application& GetApplication() const;
+        bool ShouldClose() const;
 
-    public:
-        static Window* Create(Logger& logger, const WindowProperties& props = WindowProperties());
+        static Shared<Window> Create(Application& application, const WindowProperties& props = {});
     };
 }

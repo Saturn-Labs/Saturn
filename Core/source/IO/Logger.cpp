@@ -1,5 +1,4 @@
 ﻿#include "IO/Logger.hpp"
-#include "Core/Framework.hpp"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/fmt/ostr.h"
@@ -13,9 +12,6 @@ namespace Saturn {
 
     Logger::~Logger() = default;
     Logger* Logger::Create(const LoggerProperties& props) {
-        if (Framework::HasLogger())
-            return &Framework::GetLogger();
-
         return new Logger(props);
     }
 }

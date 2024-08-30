@@ -2,54 +2,38 @@
 
 #include <stdexcept>
 
-#include "Core/Framework.hpp"
+#include "Core/Application.hpp"
 #include "Core/Timestep.hpp"
-#include "GLFW/glfw3.h"
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+#include "IO/Logger.hpp"
 
 namespace Saturn {
-    Window::Window(Logger& logger, const WindowProperties& props) :
-        m_UserPointer(new WindowUserPointer { props }),
-        logger(logger)
+    Window::Window(Application& application, const WindowProperties& props) :
+        m_Application(application),
+        m_UserPointer(new WindowUserPointer { props })
     {
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         auto* window = glfwCreateWindow(props.Width, props.Height, props.WindowName.c_str(), nullptr, nullptr);
         m_NativeWindow = window;
         if (!window)
             throw std::runtime_error("Failed to create GLFW window");
 
-        glfwMakeContextCurrent(window);
-        glfwSetWindowUserPointer(window, m_UserPointer);
-        glfwSwapInterval(props.VSync ? 1 : 0);
-        if (Framework::HasLogger())
-            Framework::GetLogger().Trace("Created GLFW window: {}", props.WindowName);
+        application.GetLogger().Trace("Created GLFW window: {}", props.WindowName);
+
+        glfwSetWindowUserPointer(m_NativeWindow, m_UserPointer);
+        glfwMakeContextCurrent(m_NativeWindow);
+        glfwSwapInterval(m_UserPointer->Properties.VSync ? 1 : 0);
+        glfwMakeContextCurrent(nullptr);
     }
 
     Window::~Window() {
         glfwDestroyWindow(m_NativeWindow);
-        glfwTerminate();
+        delete m_UserPointer;
     }
 
-    void Window::Run() {
-        while (!glfwWindowShouldClose(m_NativeWindow)) {
-            glfwPollEvents();
-            const double time = glfwGetTime();
-            Timestep timestep = { time - m_LastFrameTime };
-            m_LastFrameTime = time;
-
-            if (Framework::HasRenderer()) {
-                Renderer& renderer = Framework::GetRenderer();
-                renderer.Clear();
-            }
-
-            if (Framework::HasLayerStack()) {
-                LayerStack& layers = Framework::GetLayerStack();
-                layers.Update(timestep);
-            }
-
-            glfwSwapBuffers(m_NativeWindow);
-        }
+    void Window::Update() {
+        // Render
+        glfwSwapBuffers(m_NativeWindow);
     }
 
     WindowUserPointer* Window::GetUserPointer() const {
@@ -61,13 +45,16 @@ namespace Saturn {
         glfwSetWindowUserPointer(m_NativeWindow, pointer);
     }
 
-    Window* Window::Create(Logger& logger, const WindowProperties& props) {
-        if (Framework::HasWindow())
-            return &Framework::GetWindow();
+    Application& Window::GetApplication() const  {
+        return m_Application;
+    }
 
-        if (!glfwInit())
-            return nullptr;
+    bool Window::ShouldClose() const {
+        return glfwWindowShouldClose(m_NativeWindow);
+    }
 
-        return new Window(logger, props);
+    Shared<Window> Window::Create(Application &application, const WindowProperties &props) {
+        auto window = Shared<Window>(new Window(application, props));
+        return window;
     }
 }
