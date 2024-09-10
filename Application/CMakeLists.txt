@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.29)
-project(SaturnFrameworkApp)
+project(Application)
 set(CMAKE_CXX_STANDARD 20)
 
 include_directories(
@@ -15,14 +15,14 @@ file(GLOB_RECURSE APP_SOURCE_LIST
         "${SOURCE_DIR}/*.cpp"
 )
 
-add_executable(SaturnFrameworkApp
+add_executable(Application
         ${APP_INCLUDE_LIST}
         ${APP_SOURCE_LIST}
 )
 
-target_link_libraries(SaturnFrameworkApp SaturnFrameworkCore)
+target_link_libraries(Application Core)
 set_target_properties(
-        SaturnFrameworkApp
+        Application
         PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Output/Application/${CMAKE_BUILD_TYPE}
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Output/Application/${CMAKE_BUILD_TYPE}
@@ -30,7 +30,7 @@ set_target_properties(
 )
 
 add_custom_command(
-        TARGET SaturnFrameworkApp
+        TARGET Application
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/assets

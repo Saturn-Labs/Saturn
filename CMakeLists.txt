@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.29)
-project(SaturnFramework)
+project(Saturn)
 set(CMAKE_CXX_STANDARD 20)
 set(SOURCE_DIR "source")
 set(INCLUDE_DIR "include")
@@ -10,10 +10,8 @@ set(GLFW_INSTALL True)
 include_directories(
         ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/glfw/include
         ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/spdlog/include
-        ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/uuid_v4
         ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/glad/include
         ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/glm
-        ${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/imgui
 )
 
 add_subdirectory(Vendor/glfw)

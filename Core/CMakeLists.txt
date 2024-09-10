@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.29)
-project(SaturnFrameworkCore)
+project(Core)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -12,12 +12,6 @@ include_directories(
 file(GLOB_RECURSE API_INCLUDE_LIST
         "${INCLUDE_DIR}/*.h"
         "${INCLUDE_DIR}/*.hpp"
-        "${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/glad/src/glad.c"
-)
-
-file(GLOB IMGUI_INCLUDE
-        "${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/imgui/*.cpp"
-        "${CMAKE_SOURCE_DIR}/${VENDOR_DIR}/imgui/*.h"
 )
 
 file(GLOB_RECURSE INCLUDE_LIST
@@ -29,11 +23,18 @@ file(GLOB_RECURSE SOURCE_LIST
         "${SOURCE_DIR}/*.cpp"
 )
 
-add_library(SaturnFrameworkCore STATIC
-        ${IMGUI_INCLUDE}
+add_library(Core STATIC
         ${API_INCLUDE_LIST}
         ${INCLUDE_LIST}
         ${SOURCE_LIST}
 )
+set_target_properties(
+        Core
+        PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Output/Core/${CMAKE_BUILD_TYPE}
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Output/Core/${CMAKE_BUILD_TYPE}
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/Output/Core/${CMAKE_BUILD_TYPE}
+)
 
-target_link_libraries(SaturnFrameworkCore glfw)
+set_target_properties(Core PROPERTIES OUTPUT_NAME "Saturn.Core")
+target_link_libraries(Core glfw)

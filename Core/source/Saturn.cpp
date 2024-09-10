@@ -1,5 +1,10 @@
 ﻿#include "Saturn.hpp"
-#include "glad/glad.h"
-#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
-#include "backends/imgui_impl_opengl3.cpp"
-#include "backends/imgui_impl_glfw.cpp"
+#include "glad/../../src/gl.c"
+#include "glad/gl.h"
+
+namespace Saturn {
+    Application* Framework::sCurrentApplication = nullptr;
+    Application* Framework::GetCurrentApplication() {
+        return sCurrentApplication;
+    }
+}
