@@ -20,7 +20,7 @@ inline int main() {
         Saturn::Framework::sCurrentApplication->Run();
     }
     catch (const std::exception& e) {
-        Saturn::Framework::sCurrentApplication->GetLogger().Info("Application running exception: {}", e.what());
+        Saturn::Framework::sCurrentApplication->GetLogger().Error("Application running exception: {}", e.what());
     }
     delete Saturn::Framework::sCurrentApplication;
     return 0;

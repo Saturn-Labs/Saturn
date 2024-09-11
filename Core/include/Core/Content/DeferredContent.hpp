@@ -26,6 +26,7 @@ namespace Saturn {
         bool WaitUntilLoaded(UInt32 timeout = 4000);
 
         ContentState GetContentState() const;
+        bool IsLoaded() const;
         Nullable<Exception> GetLoadingError() const;
         const Map<String, String>& GetFilePaths() const;
 

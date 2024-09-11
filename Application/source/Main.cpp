@@ -3,6 +3,7 @@
 
 #include "Core/Entry.hpp"
 #include "Core/Logger.hpp"
+#include "Core/Window.hpp"
 #include "Core/Content/DeferredContent.hpp"
 #include "Core/Content/ShaderContent.hpp"
 #include "Core/Rendering/VertexArray.hpp"
@@ -17,34 +18,16 @@ namespace Saturn {
         }
 
         void Run() override {
-            if (!glfwInit())
-                return;
-
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-            auto* window = glfwCreateWindow(640, 480, "Default Window", nullptr, nullptr);
-            if (!window) {
-                glfwTerminate();
-                return;
-            }
-
-            glfwMakeContextCurrent(window);
-            int version = gladLoadGL(glfwGetProcAddress);
-            if (version == 0) {
-                printf("Failed to initialize OpenGL context\n");
-                return;
-            }
-
-            mLogger.Info("OpenGL Version: {}", (const char*)glGetString(GL_VERSION));
+            Window mainWindow({
+                .Title = "Test Window"
+            });
+            mainWindow.MakeContextCurrent();
 
             const Shared<ShaderContent> shaderContent = mContentManager.LoadContent<ShaderContent>({
                 { "vert", "shaders/sprites.vert" },
                 { "frag", "shaders/sprites.frag" }
             });
             shaderContent->WaitUntilLoaded();
-            mLogger.Info("Shader asset loaded!");
 
             float data[] = {
                 -0.5f,  0.5f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f,
@@ -66,11 +49,13 @@ namespace Saturn {
             vertexArray.SetVertexAttribute<float>(1, 4, false, 7 * sizeof(float), 3 * sizeof(float));
             vertexArray.Bind();
 
-            const auto shader = shaderContent->Compile();
-            shader->Use();
+            if (shaderContent->IsLoaded()) {
+                const auto shader = shaderContent->Compile();
+                shader->Use();
+            }
 
 
-            while (!glfwWindowShouldClose(window)) {
+            while (!glfwWindowShouldClose(mainWindow.GetNativeHandle())) {
                 glfwPollEvents();
 
                 glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -82,9 +67,8 @@ namespace Saturn {
                     err = glGetError();
                 }
 
-                glfwSwapBuffers(window);
+                glfwSwapBuffers(mainWindow.GetNativeHandle());
             }
-            glfwTerminate();
         }
     };
 }

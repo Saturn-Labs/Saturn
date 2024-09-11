@@ -33,6 +33,8 @@ namespace Saturn {
     }
 
     Shared<Shader> ShaderContent::Compile() {
+        if (GetContentState() != ContentState::Loaded)
+            throw Exception("ShaderContent must be loaded before compiling!");
         if (mCompiledShader)
             return mCompiledShader;
 

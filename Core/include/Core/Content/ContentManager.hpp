@@ -27,7 +27,7 @@ namespace Saturn {
 
             Shared<TContent> content = CreateShared<TContent>(completeFilePaths, std::forward<ContentArgs>(contentArgs)...);
             mContentCache[assetIdentifier] = content;
-            Future<void> asyncOperation = std::async(std::launch::async, [contentToLoad = mContentCache[assetIdentifier]] {
+            Future<void> asyncOperation = std::async(std::launch::async, [&assetIdentifier, contentToLoad = mContentCache[assetIdentifier]] {
                 contentToLoad->mContentState = ContentState::Loading;
                 try {
                     contentToLoad->LoadContent();
@@ -35,6 +35,7 @@ namespace Saturn {
                     contentToLoad->mContentState = ContentState::Loaded;
                 }
                 catch (const std::exception& e) {
+                    PrintContentLoadingError(assetIdentifier, e);
                     contentToLoad->mLoadingError = e;
                     contentToLoad->mContentState = ContentState::Failed;
                 }
@@ -48,5 +49,6 @@ namespace Saturn {
         }
 
         void UnloadContent(const String& assetIdentifier, bool eraseFromCache = true);
+        static void PrintContentLoadingError(const String& assetIdentifier, const Exception& exception);
     };
 }

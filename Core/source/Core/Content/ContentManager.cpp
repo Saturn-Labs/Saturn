@@ -1,4 +1,6 @@
 ﻿#include "Core/Content/ContentManager.hpp"
+#include "Saturn.hpp"
+#include "Core/Application.hpp"
 
 namespace Saturn {
     ContentManager::ContentManager(const String& contentPath) :
@@ -19,5 +21,10 @@ namespace Saturn {
         });
         if (eraseFromCache)
             mContentCache.erase(assetIdentifier);
+    }
+
+    void ContentManager::PrintContentLoadingError(const String& assetIdentifier, const Exception& exception) {
+        static const Logger& logger = Framework::GetCurrentApplication()->GetLogger();
+        logger.Error("Failed to load content '{}': {}", assetIdentifier, exception.what());
     }
 }

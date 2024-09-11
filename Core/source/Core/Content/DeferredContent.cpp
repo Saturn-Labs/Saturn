@@ -9,17 +9,22 @@ namespace Saturn {
     DeferredContent::~DeferredContent() = default;
 
     bool DeferredContent::WaitUntilLoaded(UInt32 timeout) {
-        if (mContentState == ContentState::Loaded)
-            return true;
         const auto time = std::chrono::high_resolution_clock::now();
-        while ((mContentState != ContentState::Loaded || mContentState != ContentState::Failed) && (std::chrono::high_resolution_clock::now() - time) < std::chrono::milliseconds(timeout))
+        while (true) {
+            if (mContentState == ContentState::Failed || mContentState == ContentState::Loaded || (std::chrono::high_resolution_clock::now() - time) < std::chrono::milliseconds(timeout))
+                break;
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
 
         return mContentState == ContentState::Loaded;
     }
 
     ContentState DeferredContent::GetContentState() const {
         return mContentState;
+    }
+
+    bool DeferredContent::IsLoaded() const {
+        return mContentState == ContentState::Loaded;
     }
 
     Nullable<Exception> DeferredContent::GetLoadingError() const {
