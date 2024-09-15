@@ -1,54 +1,119 @@
 ﻿#pragma once
-#include "Buffer/IndexBuffer.hpp"
+#include "Buffer/ElementBuffer.hpp"
 #include "Buffer/VertexBuffer.hpp"
 #include "Common/Types.hpp"
+#include "LockableResource.hpp"
 #include "Utils/GLTypeHelper.hpp"
 
 namespace Saturn {
-    class VertexArray {
-        UInt32 mIdentifier = 0;
-        VertexBuffer mVertexBuffer;
-        IndexBuffer mIndexBuffer;
+    class VertexArray final : public LockableResource<UInt32, 0> {
+        std::weak_ptr<LockableResource> mVertexBuffer = {};
+        std::weak_ptr<LockableResource> mElementBuffer = {};
+        VertexAttributeLayout mLayout = VertexAttributeLayout({});
     public:
-        VertexArray();
-        VertexArray(VertexBuffer&& vertexBuffer, IndexBuffer&& indexBuffer);
-
-        VertexArray(const VertexArray&) = delete;
-        VertexArray& operator=(const VertexArray&) = delete;
-
-        VertexArray(VertexArray&& other) noexcept;
-        VertexArray& operator=(VertexArray&& other) noexcept;
-
-        ~VertexArray();
-        void Bind() const;
-        UInt32 GetIdentifier() const;
-        bool IsValid() const;
-        bool IsVertexBufferValid() const;
-        bool IsIndexBufferValid() const;
-        VertexBuffer& GetVertexBuffer();
-        IndexBuffer& GetIndexBuffer();
-        void SetVertexBuffer(VertexBuffer&& vertexBuffer);
-        void SetIndexBuffer(IndexBuffer&& indexBuffer);
-        void RebindBuffers() const;
-        void RebindBuffers(VertexBuffer&& vertexBuffer, IndexBuffer&& indexBuffer);
-
-        template<typename T>
-        void SetVertexAttribute(UInt16 index, UInt32 count, bool normalized, UIntPtr stride, UIntPtr offset) const {
-            if (!IsValid() || !IsVertexBufferValid())
-                return;
-            constexpr GLenum type = GLTypeHelper::GetGLTypeForT<T>();
-            const UInt32 oldVertexArray = GetCurrent();
-            Bind();
-            const UInt32 oldVertexBuffer = VertexBuffer::GetCurrent();
-            mVertexBuffer.Bind();
-            glVertexAttribPointer(index, count, type, normalized, stride, reinterpret_cast<const GLvoid*>(offset));
-            glEnableVertexAttribArray(index);
-            ResetSlot();
-            glBindBuffer(GL_ARRAY_BUFFER, oldVertexBuffer);
-            glBindVertexArray(oldVertexArray);
+        VertexArray() {
+            glGenVertexArrays(1, &mName);
         }
 
-        static void ResetSlot();
-        static UInt32 GetCurrent();
+        explicit VertexArray(const std::weak_ptr<LockableResource>& vertexBuffer, const std::weak_ptr<LockableResource>& elementBuffer) :
+            mVertexBuffer(vertexBuffer),
+            mElementBuffer(elementBuffer) {
+            glGenVertexArrays(1, &mName);
+        }
+
+        ~VertexArray() noexcept override {
+            if (!VertexArray::IsValid())
+                return;
+            glDeleteVertexArrays(1, &mName);
+        }
+
+        VertexArray(VertexArray&& other) noexcept :
+            mVertexBuffer(std::move(other.mVertexBuffer)),
+            mElementBuffer(std::move(other.mElementBuffer)),
+            mLayout(std::exchange(other.mLayout, VertexAttributeLayout({}))) {
+            mName = std::exchange(other.mName, 0);
+        }
+
+        VertexArray& operator=(VertexArray&& other) noexcept {
+            if (this != &other) {
+                mName = std::exchange(other.mName, 0);
+                mVertexBuffer = std::move(other.mVertexBuffer);
+                mElementBuffer = std::move(other.mElementBuffer);
+                mLayout = std::exchange(other.mLayout, VertexAttributeLayout({}));
+            }
+            return *this;
+        };
+
+        VertexArray(const VertexArray& other) = delete;
+        VertexArray& operator=(const VertexArray& other) noexcept = delete;
+
+        void SetVertexBuffer(const std::weak_ptr<LockableResource>& buffer) {
+            mVertexBuffer = buffer;
+        }
+
+        void SetElementBuffer(const std::weak_ptr<LockableResource>& buffer) {
+            mElementBuffer = buffer;
+        }
+
+        static UInt32 GetCurrent() {
+            Int32 current = 0;
+            glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &current);
+            return static_cast<UInt32>(current);
+        }
+
+        const VertexAttributeLayout& GetLayout() const {
+            return mLayout;
+        }
+
+        void SetLayout(const VertexAttributeLayout& layout) {
+            mLayout = layout;
+            UpdateLayout();
+        }
+
+        static UInt32 GetMaxAttributes() {
+            Int32 maxAttributes = 0;
+            glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxAttributes);
+            return static_cast<UInt32>(maxAttributes);
+        }
+
+        void UpdateLayout() {
+            if (!IsValid())
+                return;
+            const UInt32 lastCurrent = GetCurrent();
+            Lock();
+            for (int i = 0; i < GetMaxAttributes(); ++i) {
+                glDisableVertexAttribArray(i);
+            }
+
+            const auto &layout = GetLayout();
+            for (const auto &attribute : layout.GetAttributes()) {
+                glEnableVertexAttribArray(attribute.Location);
+                glVertexAttribPointer(
+                    attribute.Location,
+                    attribute.ElementCount,
+                    attribute.ElementType,
+                    attribute.Normalized,
+                    layout.GetStride(),
+                    reinterpret_cast<const void *>(static_cast<uintptr_t>(attribute.Offset)));
+            }
+            glBindVertexArray(lastCurrent);
+        }
+
+        void Lock() override {
+            if (!IsValid())
+                return;
+            glBindVertexArray(mName);
+            if (const auto buffer = mVertexBuffer.lock()) {
+                buffer->Lock();
+            }
+
+            if (const auto buffer = mElementBuffer.lock()) {
+                buffer->Lock();
+            }
+        }
+
+        void Unlock() override {
+            glBindVertexArray(0);
+        }
     };
 }

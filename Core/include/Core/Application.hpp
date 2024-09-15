@@ -1,25 +1,15 @@
 ﻿#pragma once
-#include "Logger.hpp"
-#include "Common/Types.hpp"
-#include "Content/ContentManager.hpp"
+#include "Common/Timestep.hpp"
 
 namespace Saturn {
-    class Window;
-    struct ApplicationProperties {
-        String LoggerName = "Application";
-        String ContentPath = "assets/";
-    };
-
+    class Context;
     class Application {
-    protected:
-        Logger mLogger;
-        ContentManager mContentManager;
+        double mTimeNow = 0;
+        double mLastTime = 0;
     public:
-        explicit Application(const ApplicationProperties& props = {});
+        explicit Application();
         virtual ~Application();
         virtual void Run();
-
-        Logger& GetLogger();
-        ContentManager& GetContentManager();
+        virtual void Update(const Timestep& time) = 0;
     };
 }

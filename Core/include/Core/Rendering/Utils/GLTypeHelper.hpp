@@ -1,6 +1,8 @@
 ﻿#pragma once
-#include <type_traits>
-#include <glad/gl.h>
+#include <typeindex>
+
+
+#include "Common/Types.hpp"
 
 namespace Saturn {
     template<GLenum>
@@ -68,6 +70,46 @@ namespace Saturn {
 
     class GLTypeHelper {
     public:
+        static std::unordered_map<GLenum, UInt32> CreateGLTypeSizeMap() {
+            std::unordered_map<GLenum, UInt32> glTypeSizeMap;
+
+            glTypeSizeMap[GL_FLOAT] = sizeof(float);
+            glTypeSizeMap[GL_DOUBLE] = sizeof(double);
+            glTypeSizeMap[GL_HALF_FLOAT] = sizeof(unsigned short);
+            glTypeSizeMap[GL_INT] = sizeof(int);
+            glTypeSizeMap[GL_UNSIGNED_INT] = sizeof(unsigned int);
+            glTypeSizeMap[GL_SHORT] = sizeof(short);
+            glTypeSizeMap[GL_UNSIGNED_SHORT] = sizeof(unsigned short);
+            glTypeSizeMap[GL_BYTE] = sizeof(signed char);
+            glTypeSizeMap[GL_UNSIGNED_BYTE] = sizeof(unsigned char);
+            glTypeSizeMap[GL_BOOL] = sizeof(bool);
+
+            return glTypeSizeMap;
+        }
+
+        static UInt32 GetGLtypeSize(GLenum type) {
+            static const auto glTypeSizeMap = CreateGLTypeSizeMap();
+            return glTypeSizeMap.at(type);
+        }
+
+        static std::type_index GetCppTypeForGLenum(GLenum glType) {
+            switch (glType) {
+            case GL_FLOAT:        return std::type_index(typeid(float));
+            case GL_DOUBLE:       return std::type_index(typeid(double));
+            case GL_HALF_FLOAT:   return std::type_index(typeid(unsigned short)); // Half float as 16-bit unsigned short
+            case GL_INT:          return std::type_index(typeid(int));
+            case GL_UNSIGNED_INT: return std::type_index(typeid(unsigned int));
+            case GL_SHORT:        return std::type_index(typeid(short));
+            case GL_UNSIGNED_SHORT: return std::type_index(typeid(unsigned short));
+            case GL_BYTE:         return std::type_index(typeid(signed char));
+            case GL_UNSIGNED_BYTE: return std::type_index(typeid(unsigned char));
+            case GL_FIXED:        return std::type_index(typeid(int)); // Platform dependent
+            case GL_BOOL:         return std::type_index(typeid(bool));
+            default:
+                throw std::runtime_error("Unknown GLenum type.");
+            }
+        }
+
         template<typename T>
         static constexpr GLenum GetGLTypeForT() {
             if constexpr (std::is_same_v<T, float>) {
@@ -100,6 +142,7 @@ namespace Saturn {
                 return GL_BOOL;
             } else {
                 static_assert(std::is_void_v<T>, "Unsupported type for OpenGL.");
+                return 0;  // This line should never be reached, but helps prevent compilation errors
             }
         }
     };

@@ -1,14 +1,26 @@
-﻿#include "Core/Logger.hpp"
+﻿#include "pch.hpp"
+#include "Core/Logger.hpp"
 
 namespace Saturn {
-    Logger::Logger(const String& name) :
-        mNativeLogger(spdlog::stdout_color_mt(name))
-    {
-        mNativeLogger->set_level(spdlog::level::trace);
-        mNativeLogger->set_pattern("%^[%T] %n: %v%$");
+    std::shared_ptr<spdlog::logger> Logger::sNativeLogger = nullptr;
+    bool Logger::sInitialized = false;
+
+    void Logger::Initialize(const std::string& name) {
+        if (sInitialized)
+            return;
+        sInitialized = true;
+        if (sNativeLogger)
+            spdlog::drop(sNativeLogger->name());
+        sNativeLogger = spdlog::stdout_color_mt(name);
+        sNativeLogger->set_level(spdlog::level::trace);
+        sNativeLogger->set_pattern("%^[%T] %n: %v%$");
     }
 
-    Logger::~Logger() {
-        spdlog::drop(mNativeLogger->name());
+    void Logger::Shutdown() {
+        if (!sInitialized)
+            return;
+        sInitialized = false;
+        spdlog::drop(sNativeLogger->name());
+        sNativeLogger.reset();
     }
 }

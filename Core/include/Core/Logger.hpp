@@ -1,44 +1,44 @@
 ﻿#pragma once
 #include "Common/Types.hpp"
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-#include "spdlog/fmt/std.h"
 
 namespace Saturn {
-    class Logger final {
-        Shared<spdlog::logger> mNativeLogger = nullptr;
+    class Logger {
+        static bool sInitialized;
+        static std::shared_ptr<spdlog::logger> sNativeLogger;
     public:
-        Logger() = delete;
-        Logger(const Logger&) = delete;
-        Logger& operator=(const Logger&) = delete;
-        Logger(Logger&&) = delete;
-        Logger& operator=(Logger&&) = delete;
-        explicit Logger(const String& name);
-        ~Logger();
+        static void Initialize(const std::string& name);
+        static void Shutdown();
 
         template<typename... Args>
-        void Trace(const spdlog::format_string_t<Args...>& format, Args&&... args) const {
-            mNativeLogger->trace(format, std::forward<Args>(args)...);
+        static void Debug(const spdlog::format_string_t<Args...>& format, Args&&... args) {
+            #ifdef _DEBUG
+            sNativeLogger->trace(format, std::forward<Args>(args)...);
+            #endif
         }
 
         template<typename... Args>
-        void Info(const spdlog::format_string_t<Args...>& format, Args&&... args) const {
-            mNativeLogger->info(format, std::forward<Args>(args)...);
+        static void Trace(const spdlog::format_string_t<Args...>& format, Args&&... args) {
+            sNativeLogger->trace(format, std::forward<Args>(args)...);
         }
 
         template<typename... Args>
-        void Warn(const spdlog::format_string_t<Args...>& format, Args&&... args) const {
-            mNativeLogger->warn(format, std::forward<Args>(args)...);
+        static void Info(const spdlog::format_string_t<Args...>& format, Args&&... args) {
+            sNativeLogger->info(format, std::forward<Args>(args)...);
         }
 
         template<typename... Args>
-        void Error(const spdlog::format_string_t<Args...>& format, Args&&... args) const {
-            mNativeLogger->error(format, std::forward<Args>(args)...);
+        static void Warn(const spdlog::format_string_t<Args...>& format, Args&&... args) {
+            sNativeLogger->warn(format, std::forward<Args>(args)...);
         }
 
         template<typename... Args>
-        void Critical(const spdlog::format_string_t<Args...>& format, Args&&... args) const {
-            mNativeLogger->critical(format, std::forward<Args>(args)...);
+        static void Error(const spdlog::format_string_t<Args...>& format, Args&&... args) {
+            sNativeLogger->error(format, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        static void Critical(const spdlog::format_string_t<Args...>& format, Args&&... args) {
+            sNativeLogger->critical(format, std::forward<Args>(args)...);
         }
     };
 }

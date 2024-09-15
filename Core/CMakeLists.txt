@@ -37,4 +37,24 @@ set_target_properties(
 )
 
 set_target_properties(Core PROPERTIES OUTPUT_NAME "Saturn.Core")
+target_precompile_headers(Core PUBLIC "${SOURCE_DIR}/pch.hpp")
+find_package(Doxygen REQUIRED)
+
+set(DOXYGEN_IN ${CMAKE_SOURCE_DIR}/Doxyfile)
+set(DOXYGEN_OUT ${CMAKE_SOURCE_DIR}/Documentation)
+
+# Optionally customize output directories in Doxyfile via CMake variables
+set(DOXYGEN_HTML_DIR ${DOXYGEN_OUT}/html)
+
+add_custom_command(
+        TARGET Core
+        COMMAND doxygen ${DOXYGEN_IN}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM
+)
+
+# Ensure the output directory exists
+file(MAKE_DIRECTORY ${DOXYGEN_OUT})
+
 target_link_libraries(Core glfw)

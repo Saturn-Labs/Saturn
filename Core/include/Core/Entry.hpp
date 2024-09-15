@@ -4,24 +4,13 @@
 #include "Logger.hpp"
 #include "Saturn.hpp"
 
-namespace Saturn {
-    extern Application* CreateApplication();
-}
-
 inline int main() {
     try {
-        Saturn::Framework::sCurrentApplication = Saturn::CreateApplication();
+        Saturn::Framework::Initialize();
+        Saturn::Framework::GetApplication()->Run();
     }
     catch (const std::exception& e) {
-        std::cout << fmt::format("Application creation exception: {}", e.what()) << std::endl;
+        Saturn::Logger::Error("Unhandled exception: {}", e.what());
     }
-
-    try {
-        Saturn::Framework::sCurrentApplication->Run();
-    }
-    catch (const std::exception& e) {
-        Saturn::Framework::sCurrentApplication->GetLogger().Error("Application running exception: {}", e.what());
-    }
-    delete Saturn::Framework::sCurrentApplication;
     return 0;
 }

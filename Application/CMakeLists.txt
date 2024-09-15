@@ -20,6 +20,7 @@ add_executable(Application
         ${APP_SOURCE_LIST}
 )
 
+target_precompile_headers(Application PRIVATE "${SOURCE_DIR}/pch.hpp")
 target_link_libraries(Application Core)
 set_target_properties(
         Application

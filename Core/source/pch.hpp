@@ -1,0 +1,25 @@
+﻿#pragma once
+#include <functional>
+#include <memory>
+#include <optional>
+#include <string>
+#include <istream>
+#include <fstream>
+#include <future>
+#include <ostream>
+#include <thread>
+#include <unordered_map>
+#include <map>
+#include <exception>
+#include <algorithm>
+#include <ranges>
+#include <filesystem>
+namespace fs = std::filesystem;
+#define GLFW_INCLUDE_NONE
+#include "glad/gl.h"
+#include "GLFW/glfw3.h"
+#include "stb_image.h"
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/fmt/std.h"
+#include "glm/glm.hpp"
