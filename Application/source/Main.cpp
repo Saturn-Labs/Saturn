@@ -12,7 +12,8 @@
 #include "Core/Rendering/VertexArray.hpp"
 #include "Core/Resource/ResourceLocation.hpp"
 #include "Core/Resource/ResourceManager.hpp"
-#include "Core/Resource/Shader.hpp"
+#include "Core/Rendering/Shader/Shader.hpp"
+#include "Core/Resource/ShaderResource.hpp"
 #include "Core/Resource/TextureResource.hpp"
 #include "GLFW/glfw3.h"
 
@@ -20,12 +21,13 @@
 namespace Saturn {
     class TestApplication final : public Application {
         std::weak_ptr<Context> mainWindow;
-        std::shared_ptr<Shader> spritesShader;
+        std::shared_ptr<ShaderResource> spritesShaderResource;
         std::shared_ptr<TextureResource> textureResource;
         std::shared_ptr<VertexBuffer<BasicVertex>> vertexBuffer;
         std::shared_ptr<ElementBuffer<UInt32>> elementBuffer;
         VertexArray vertexArray;
         Texture protoTexture;
+        std::shared_ptr<Shader> spritesShader;
     public:
         explicit TestApplication() {
             mainWindow = Context::Create({ false, { "Window 1", 640, 480, FrameSync::Vertical }});
@@ -37,11 +39,13 @@ namespace Saturn {
                 {"vertex", "assets/shaders/sprites.vert"},
                 {"fragment", "assets/shaders/sprites.frag"}
             });
-            spritesShader = resources.LoadResource<Shader>(shaderLocation);
+            spritesShaderResource = resources.LoadResource<ShaderResource>(shaderLocation);
             textureResource = resources.LoadResource<TextureResource>({"assets/textures/prototype.png"});
 
-            if (!spritesShader->WaitUntilLoaded() && spritesShader->GetState() == ResourceState::Failed)
-                Logger::Error("{}", spritesShader->GetException()->what());
+            if (!spritesShaderResource->WaitUntilLoaded() && spritesShaderResource->GetState() == ResourceState::Failed)
+                Logger::Error("{}", spritesShaderResource->GetException()->what());
+            spritesShader = spritesShaderResource->GetShader();
+
             if (!textureResource->WaitUntilLoaded() && textureResource->GetState() == ResourceState::Failed)
                 Logger::Error("{}", textureResource->GetException()->what());
 
@@ -62,9 +66,9 @@ namespace Saturn {
             vertexArray = std::move(VertexArray(vertexBuffer, elementBuffer));
             vertexArray.SetLayout(BasicVertex::GetLayout());
             vertexArray.Lock();
+            spritesShader->AddUniform<int>("uTexture", 0);
+            spritesShader->UpdateData();
             spritesShader->Lock();
-            const UInt32 texture = glGetUniformLocation(spritesShader->GetName(), "uTexture");
-            glUniform1i(texture, 0);
         }
 
         void Update(const Timestep& time) override {

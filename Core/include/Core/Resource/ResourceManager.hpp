@@ -81,6 +81,16 @@ namespace Saturn {
             return resourcePtr;
         }
 
+        template<typename Lambda>
+        void WorkInResourceContextAsync(Lambda func, bool wait = false) {
+            auto future = std::async(std::launch::async, [*this, &func] {
+                GetContext().SetThisAsCurrentContext();
+                func();
+            });
+            if (wait)
+                future.get();
+        }
+
         Context& GetContext() const;
     };
 }

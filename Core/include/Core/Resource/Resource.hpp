@@ -15,12 +15,12 @@ namespace Saturn {
     private:
         friend class ResourceManager;
 
+    protected:
         ResourceManager& mManager;
         ResourceLocation mLocation;
         ResourceState mState = ResourceState::Unloaded;
         std::optional<std::exception> mException;
-
-    protected:
+        
         /**
          * @brief A virtual function to load the resource.
          */
